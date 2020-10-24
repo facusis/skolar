@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 require('./connection');
-const Teacher = require('./schemas/Teacher');
+const User = require('./schemas/User');
 const Course = require('./schemas/Course');
 const {initAdminUser} = require('./initAdminUser');
 
 
-initAdminUser(Teacher);
+initAdminUser(User);
 
 module.exports = {
-  Teacher,
+  User,
   Course,
 }

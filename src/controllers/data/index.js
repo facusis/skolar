@@ -1,6 +1,6 @@
 const {redactMiddleware} = require( "./dataCleanupOnReads");
 
-const {validationEntityMiddleware, validationEntityIdMiddleware} = require("./validation");
+const {validationEntityMiddleware, validationEntityIdMiddleware, validateUserRole} = require("./validation");
 
 const express = require('express')
 
@@ -10,12 +10,12 @@ const models = require('../../mongo');
 const buildRouter = () => {
   var router = express.Router()
 
-  router.use('/:entity', validationEntityMiddleware);
+  router.use('/:entity', validationEntityMiddleware, validateUserRole);
   router.use('/:entity/:id', validationEntityIdMiddleware);
   router.use('/', redactMiddleware);
 
   //Get one by ID
-  router.get('/:entity/:id', (req, res) => {
+  router.get('/:entity/:id',(req, res) => {
     const Entity = models[req.params.entity];
     return Entity.findById(req.params.id).then((result) => {
       if (result) {
@@ -40,7 +40,7 @@ const buildRouter = () => {
   // CREATE
   router.post('/:entity', (req, res) => {
     const Entity = models[req.params.entity];
-    const newEntity = new Entity({name: req.body.name});
+    const newEntity = new Entity(req.body);
     return newEntity.save().then((result) => {
       res.send(result);
     }).catch((err) => {
